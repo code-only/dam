@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('filename')->nullable();
             $table->string('filepath');
             $table->string('thumbnail')->nullable();
+            $table->string('file_type');
             $table->string('asset_type');
             $table->boolean('is_private');
             $table->boolean('status')->default(0);

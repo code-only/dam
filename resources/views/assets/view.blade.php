@@ -11,7 +11,7 @@
 
     <div class="container mx-auto dark:text-white py-12 grid grid-cols-2">
         <div class="asset p-2 ">
-            <img src="{{ $asset->thumbnail }}" class="border border-gray-500 p-2">
+            <img src="/{{ $asset->thumbnail }}" class="border border-gray-500 p-2">
             <div class="dark:text-gray-500">{{ __('Uploaded By: ') . $asset->user->name }}</div>
         </div>
         <div class="assets-info px-4 py-2">

@@ -1,3 +1,4 @@
+@php use App\Enums\AssetType; @endphp
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -6,11 +7,11 @@
     </x-slot>
 
     <livewire:asset-upload></livewire:asset-upload>
-    <div class="container mx-auto py-12 grid grid-cols-4 gap-4 dark:text-white">
+    <div class="container mx-auto grid grid-cols-4 gap-4 dark:text-white">
         @foreach($assets as $asset)
             <div class="asset border p-2 border-gray-500 {{ $asset->is_private ? "bg-gray-600" : "" }}">
                 <a href="/assets/{{ $asset->asset_id }}">
-                    <img src="{{ $asset->thumbnail ?? "https://placehold.co/400x400?font=Lato&text=".$asset->asset_type  }}">
+                    <img src="{{ $asset->thumbnail }}">
                     <div class="">{{ $asset->filename }}</div>
                     <div class="dark:text-gray-500">{{ $asset->asset_id }}</div>
                     <div class="dark:text-gray-300">{{ $asset->user->name }}</div>

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\AssetType;
+use App\Events\AssetUploaded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,16 +19,24 @@ class Asset extends Model
     protected $fillable = [
         'filename',
         'filepath',
-        'thumbnail',
-        'asset_type',
         'is_private',
-        'user_id',
-        'status'
     ];
 
     protected $attributes = [
         'is_private' => false,
+        'status' => true,
+        'thumbnail' => null,
+        'asset_type' => AssetType::class
     ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = ['user_id'];
+
+    protected $perPage = 20;
 
     // Registering model events
     protected static function boot()
@@ -35,12 +45,27 @@ class Asset extends Model
         // Event fired before a model is created
         static::creating(function ($model) {
             $model->asset_id =  (string) Str::orderedUuid();
-            //$model->user_id = Auth::user();
+            $model->user_id = Auth::user()->id ?? 1;
         });
     }
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public static function create($file, $is_private = false): Asset {
+        $path = $is_private ? $file->store(path: 'assets') : $file->storePublicly('assets');
+        $asset = new Asset([
+            'filename' => $file->getClientOriginalName(),
+            'filepath' => $path,
+            'is_private' => $is_private
+        ]);
+        $asset->user_id = Auth::user()->id ?? 1;
+        $asset->file_type = $file->guessExtension();
+        $asset->asset_type = AssetType::detect($file->guessExtension());
+        $asset->save();
+        AssetUploaded::dispatch($asset);
+        return $asset;
     }
 }

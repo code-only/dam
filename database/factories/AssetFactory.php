@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\AssetType;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -17,13 +18,16 @@ class AssetFactory extends Factory
      */
     public function definition(): array
     {
+        $filetypes = ["csv", "png", "gif", "mp4", "txt", "xml"];
+        $fileType = array_rand($filetypes);
         return [
-            'filename' => fake()->name(),
-            'filepath' => fake()->filePath(),
-            'thumbnail' => fake()->imageUrl(),
+            'filename' => fake()->domainName(),
+            'filepath' => fake()->filePath() . "." . $filetypes[$fileType],
             'is_private' => fake()->boolean(),
             'user_id' => User::factory(),
-            'asset_type' => fake()->randomElement(["image", "video", "document"])
+            'status' => fake()->boolean,
+            'asset_type' => AssetType::detect($filetypes[$fileType]),
+            'file_type' => $filetypes[$fileType]
         ];
     }
 }

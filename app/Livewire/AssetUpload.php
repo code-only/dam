@@ -3,7 +3,6 @@
 namespace App\Livewire;
 
 use App\Models\Asset;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -25,15 +24,7 @@ class AssetUpload extends Component
     public function save()
     {
         foreach ($this->assets as $file) {
-            $path = $file->store(path: 'assets');
-            $asset = new Asset([
-                'filename' => $file->getClientOriginalName(),
-                'filepath' => $path,
-                'is_private' => $this->is_private,
-                'user_id' => Auth::user()->id,
-                'asset_type' => $file->getMimeType()
-            ]);
-            $asset->save();
+            Asset::create($file, $this->is_private);
         }
         $this->reset('assets');
         return redirect()->to('/assets');
