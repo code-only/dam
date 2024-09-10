@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Enums\AssetType;
 use App\Events\AssetUploaded;
+use App\Models\Asset;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use PHPUnit\Event\Dispatcher;
@@ -27,30 +28,41 @@ class GenerateThumbnail
     public function handle(AssetUploaded $event): void
     {
         $asset = $event->asset;
-        if($asset->asset_type === AssetType::IMAGE) {
-            //@TODO: generate thumbnail
-            $image = $this->imageManager->read(Storage::disk()->path($asset->filepath));
-            $image->contain(400, 400);
-            $thumbnail = "thumbnails/400/" . Str::kebab($asset->filename) . ".webp";
-            if(Storage::disk("public")->put($thumbnail, $image->removeAnimation()->toWebp())) {
-                $asset->thumbnail = $thumbnail;
-            }
-        }
-        if($asset->asset_type === AssetType::DOCUMENT) {
-            if(in_array($asset->file_type, ["pdf"])) {
-                $image = $this->imageManager->read(Storage::disk()->path($asset->filepath));
-                $image->blendTransparency("ffffff");
-                $image->contain(400, 400);
-                $thumbnail = "thumbnails/400/" . Str::kebab($asset->filename) . ".webp";
-                if(Storage::disk("public")->put($thumbnail, $image->removeAnimation()->toWebp())) {
-                    $asset->thumbnail = $thumbnail;
-                }
-            }
+        // @TODO: Define styles.
+        if ($asset->asset_type === AssetType::IMAGE) {
+            $thumbnailImage = $this->getThumbnail($asset, width: 300, height: 300);
+            $thumbnail = $this->saveThumbnail($thumbnailImage, Str::kebab($asset->filename), "medium");
+        } elseif ($asset->asset_type === AssetType::DOCUMENT && in_array($asset->file_type, ["pdf"])) {
+                $thumbnailImage = $this->getThumbnail($asset);
+                $thumbnailImage->blendTransparency("ffffff");
+                $thumbnail = $this->saveThumbnail($thumbnailImage, Str::kebab($asset->filename), "medium");
         }
         else {
-            $asset->thumbnail = "https://placehold.co/400?text=" . $asset->asset_type->value;
+            $thumbnail["medium"] = "https://placehold.co/400?text=" . $asset->asset_type->value;
         }
+        $asset->thumbnail = array_merge($asset->thumbnail ?? [], $thumbnail);
         $asset->save();
+    }
+
+    private function getThumbnail(Asset $asset, string $style = "medium", int $width = 400, int $height = 400) {
+        $image = $this->imageManager->read(Storage::disk()->path($asset->filepath));
+        $image->contain($width, $height);
+        return $image;
+    }
+
+    /**
+     * @param $image
+     * @param $filename
+     * @param string $style
+     * @param int $width
+     * @param int $height
+     * @return array|void
+     */
+    private function saveThumbnail($image, $filename, string $style, int $width = 400, int $height = 400) {
+        $thumbnail[$style] = "thumbnails/{$style}/" . $filename . ".webp";
+        if(Storage::disk("public")->put($thumbnail[$style], $image->removeAnimation()->toWebp())) {
+            return $thumbnail;
+        }
     }
 
     /**

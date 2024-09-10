@@ -19,9 +19,11 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'user_id');
             $table->string('filename')->nullable();
             $table->string('filepath');
-            $table->string('thumbnail')->nullable();
+            $table->json('thumbnail')->nullable();
             $table->string('file_type');
             $table->string('asset_type');
+            $table->string('version');
+            $table->bigInteger('file_size');
             $table->boolean('is_private');
             $table->boolean('status')->default(0);
             $table->timestamps();

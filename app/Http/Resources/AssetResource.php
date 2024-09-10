@@ -21,9 +21,12 @@ class AssetResource extends JsonResource
             'thumbnail' => $this->thumbnail,
             'uploaded_by' => $this->user->name,
             'uploaded_at' => $this->created_at,
+            'file_size' => $this->file_size,
             'file_type' => $this->file_type,
             'asset_type' => $this->asset_type,
-            'is_private' => $this->is_private ? true : false,
+            'is_private' => (bool) $this->is_private,
+            'current_version' => $this->version,
+            'status' => $this->status ? "Published" : "Unpublished"
         ];
     }
 }

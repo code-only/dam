@@ -3,7 +3,6 @@
 use App\Http\Resources\AssetCollection;
 use App\Http\Resources\AssetResource;
 use App\Models\Asset;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
