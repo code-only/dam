@@ -5,11 +5,13 @@ namespace App\Listeners;
 use App\Enums\AssetType;
 use App\Events\AssetUploaded;
 use App\Models\Asset;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Intervention\Image\Drivers\Gd\Driver;
 use PHPUnit\Event\Dispatcher;
 use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Imagick\Driver;
+use Spatie\MediaLibrary\Conversions\ImageGenerators\Video;
 
 class GenerateThumbnail
 {
@@ -36,6 +38,11 @@ class GenerateThumbnail
                 $thumbnailImage = $this->getThumbnail($asset);
                 $thumbnailImage->blendTransparency("ffffff");
                 $thumbnail = $this->saveThumbnail($thumbnailImage, Str::kebab($asset->filename), "medium");
+        } elseif ($asset->asset_type === AssetType::VIDEO) {
+            $vidGen = new Video();
+            $t = $vidGen->convert(Storage::disk()->path($asset->filepath));
+            $img = $this->imageManager->read($t);
+            $thumbnail = $this->saveThumbnail($img, Str::kebab($asset->filename), "medium");
         }
         else {
             $thumbnail["medium"] = "https://placehold.co/400?text=" . $asset->asset_type->value;

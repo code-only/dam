@@ -16,5 +16,5 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 
-    Route::resource('assets', AssetController::class)->name('index', 'assets');
+    Route::resource('/assets', AssetController::class)->name('index', 'assets');
 });
