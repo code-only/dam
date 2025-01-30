@@ -6,6 +6,7 @@ use App\Casts\FileSize;
 use App\Enums\AssetType;
 use App\Events\AssetUploaded;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
+use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,6 +26,7 @@ class Asset extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use HasTimestamps;
 
     protected $fillable = [
         'filename',

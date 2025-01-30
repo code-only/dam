@@ -22,8 +22,7 @@ return new class extends Migration
             $table->json('thumbnail')->nullable();
             $table->string('file_type');
             $table->string('asset_type');
-            $table->string('version');
-            $table->bigInteger('file_size');
+            $table->string('current_version');
             $table->boolean('is_private');
             $table->boolean('status')->default(0);
             $table->timestamps();
