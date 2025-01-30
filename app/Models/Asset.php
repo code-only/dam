@@ -70,7 +70,7 @@ class Asset extends Model
         // Event fired before a model is created
         static::creating(function ($model) {
             $model->asset_id =  (string) Str::orderedUuid();
-            $model->version =  "v1";
+            $model->current_version =  "v1";
             $model->user_id = Auth::user()->id ?? 1;
         });
     }
@@ -92,7 +92,7 @@ class Asset extends Model
         ]);
         $asset->file_type = $file->guessExtension();
         $asset->asset_type = AssetType::detect($file->guessExtension());
-        $asset->file_size = $file->getSize();
+//        $asset->file_size = $file->getSize();
         $asset->save();
         // @TODO: Run with defer() when available.
         AssetUploaded::dispatch($asset);

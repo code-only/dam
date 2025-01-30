@@ -11,7 +11,7 @@ class AssetUpload extends Component
 {
     use WithFileUploads;
 
-    #[Validate(['assets.*' => 'max:2048'])] // 2MB Max
+    #[Validate(['assets.*' => 'max:8096'])] // 2MB Max
     public $assets = [];
 
     public $is_private = false;
