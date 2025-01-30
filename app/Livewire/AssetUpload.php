@@ -27,6 +27,6 @@ class AssetUpload extends Component
             Asset::create($file, $this->is_private);
         }
         $this->reset('assets');
-        return redirect()->to('/assets/index');
+        return redirect()->to('/assets');
     }
 }
